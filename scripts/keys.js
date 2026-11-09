@@ -1,6 +1,6 @@
 // Creates .env with fresh TEST keys for Atlantic, if it does not exist yet, and prints only the addresses:
 //   FACILITATOR_PRIVATE_KEY  the facilitator's signer — needs a little PHRS on Atlantic for gas
-//   CLIENT_PRIVATE_KEY       the paying client — needs TEST USDC and a little PHRS (one Permit2 approval)
+//   CLIENT_PRIVATE_KEY       the paying client — needs Circle USDC (faucet.circle.com, Pharos Testnet); no PHRS
 //   SELLER_PRIVATE_KEY       kept only so the receiving address can be recovered; the server uses PAY_TO_ADDRESS
 // The keys are written to .env (git-ignored) and never printed.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -25,6 +25,6 @@ if (existsSync(".env")) {
 }
 const addr = (k) => (process.env[k] ? privateKeyToAccount(process.env[k].trim()).address : "(not set)");
 console.log(`\nfacilitator ${addr("FACILITATOR_PRIVATE_KEY")}   ← send it a little PHRS (gas for settlements)`);
-console.log(`client      ${addr("CLIENT_PRIVATE_KEY")}   ← send it TEST USDC (0xB691f00682fEef63bc73f41C380fF648d73c6A2c) and a little PHRS`);
+console.log(`client      ${addr("CLIENT_PRIVATE_KEY")}   ← send it Circle USDC (0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B) from faucet.circle.com`);
 console.log(`payTo       ${process.env.PAY_TO_ADDRESS ?? "(not set)"}   ← receives the payments`);
 if (!readFileSync(".gitignore", "utf8").includes(".env")) console.log("\nWARNING: .env is not in .gitignore");
