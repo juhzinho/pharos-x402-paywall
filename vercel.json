@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "",
+  "outputDirectory": "public",
+  "functions": { "api/index.js": { "maxDuration": 60 } },
+  "rewrites": [
+    { "source": "/facilitator", "destination": "/api/index?path=/facilitator" },
+    { "source": "/facilitator/:rest*", "destination": "/api/index?path=/facilitator/:rest*" },
+    { "source": "/health", "destination": "/api/index?path=/health" },
+    { "source": "/catalog", "destination": "/api/index?path=/catalog" },
+    { "source": "/api/atlantic/:rest*", "destination": "/api/index?path=/api/atlantic/:rest*" },
+    { "source": "/api/pacific/:rest*", "destination": "/api/index?path=/api/pacific/:rest*" }
+  ]
+}

@@ -1,0 +1,294 @@
+{
+  "recordedAt": "2026-11-09T20:03:14.017Z",
+  "network": "Pharos Atlantic Testnet (eip155:688689)",
+  "fork": false,
+  "explorer": "https://atlantic.pharosscan.xyz",
+  "server": "http://localhost:3180",
+  "client": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc",
+  "balance": {
+    "start": "100000000",
+    "end": "99992000",
+    "spent": "8000"
+  },
+  "paid": [
+    {
+      "path": "/api/atlantic/block",
+      "query": {},
+      "first": {
+        "status": 402,
+        "accepts": {
+          "scheme": "exact",
+          "network": "eip155:688689",
+          "amount": "1000",
+          "asset": "0xB691f00682fEef63bc73f41C380fF648d73c6A2c",
+          "payTo": "0x67E2F98EaC710d893C3717C789e3d5765d8d07AA",
+          "maxTimeoutSeconds": 120,
+          "extra": {
+            "name": "TEST USDC",
+            "assetTransferMethod": "permit2"
+          }
+        },
+        "paymentRequired": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cDovL2xvY2FsaG9zdDozMTgwL2FwaS9hdGxhbnRpYy9ibG9jayIsImRlc2NyaXB0aW9uIjoiVGhlIGxhdGVzdCBQaGFyb3MgQXRsYW50aWMgYmxvY2s6IG51bWJlciwgdGltZSwgdHJhbnNhY3Rpb25zLCBnYXMuIiwibWltZVR5cGUiOiJhcHBsaWNhdGlvbi9qc29uIiwic2VydmljZU5hbWUiOiJQaGFyb3MgeDQwMiBQYXl3YWxsIn0sImFjY2VwdHMiOlt7InNjaGVtZSI6ImV4YWN0IiwibmV0d29yayI6ImVpcDE1NTo2ODg2ODkiLCJhbW91bnQiOiIxMDAwIiwiYXNzZXQiOiIweEI2OTFmMDA2ODJmRWVmNjNiYzczZjQxQzM4MGZGNjQ4ZDczYzZBMmMiLCJwYXlUbyI6IjB4NjdFMkY5OEVhQzcxMGQ4OTNDMzcxN0M3ODllM2Q1NzY1ZDhkMDdBQSIsIm1heFRpbWVvdXRTZWNvbmRzIjoxMjAsImV4dHJhIjp7Im5hbWUiOiJURVNUIFVTREMiLCJhc3NldFRyYW5zZmVyTWV0aG9kIjoicGVybWl0MiJ9fV19"
+      },
+      "signed": {
+        "method": "permit2",
+        "from": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc",
+        "to": "0x67E2F98EaC710d893C3717C789e3d5765d8d07AA",
+        "value": "1000",
+        "token": "0xB691f00682fEef63bc73f41C380fF648d73c6A2c",
+        "spender": "0x402085c248EeA27D92E8b30b2C58ed07f9E20001",
+        "nonce": "95836233131823455657892742189432054835481864695304763260338055976674278312926",
+        "validBefore": "1794254675",
+        "signature": "0x9d0b0b74c63c8dfc…"
+      },
+      "approval": {
+        "hash": "0x2c338fe01e822a111aef441bcb9ea060c31f783e310034ab83317a084bc2eedc",
+        "explorer": "https://atlantic.pharosscan.xyz/tx/0x2c338fe01e822a111aef441bcb9ea060c31f783e310034ab83317a084bc2eedc",
+        "block": 32537549
+      },
+      "second": {
+        "status": 200,
+        "body": {
+          "network": "Pharos Atlantic Testnet",
+          "block": 32537551,
+          "hash": "0x41a5ac37c508d62fe0cbb4f827af54e74daba2bc8ed0c3a16889ffe99990def0",
+          "time": "2026-11-09T20:02:38.000Z",
+          "ageSeconds": 1,
+          "transactions": 0,
+          "gasUsed": 0,
+          "gasLimit": 1000000000,
+          "baseFeeGwei": 1,
+          "paid": {
+            "amount": "0.001 USDC",
+            "transaction": "0xa83a6fb5fa6182a87feaaec58a84aa6a9c70320c0e27eac6b418da4a30743339",
+            "payer": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc"
+          }
+        },
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "payment-response": "eyJzdWNjZXNzIjp0cnVlLCJwYXllciI6IjB4MWZlMjEyMDRERWM1OTM3NWI3ODVmM2YyRTNmNmVhMmFmNDgwNDhDYyIsInRyYW5zYWN0aW9uIjoiMHhhODNhNmZiNWZhNjE4MmE4N2ZlYWFlYzU4YTg0YWE2YTljNzAzMjBjMGUyN2VhYzZiNDE4ZGE0YTMwNzQzMzM5IiwibmV0d29yayI6ImVpcDE1NTo2ODg2ODkifQ=="
+        }
+      },
+      "paymentResponse": {
+        "success": true,
+        "payer": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc",
+        "transaction": "0xa83a6fb5fa6182a87feaaec58a84aa6a9c70320c0e27eac6b418da4a30743339",
+        "network": "eip155:688689"
+      },
+      "onchain": {
+        "hash": "0xa83a6fb5fa6182a87feaaec58a84aa6a9c70320c0e27eac6b418da4a30743339",
+        "explorer": "https://atlantic.pharosscan.xyz/tx/0xa83a6fb5fa6182a87feaaec58a84aa6a9c70320c0e27eac6b418da4a30743339",
+        "block": 32537556,
+        "status": "success",
+        "gasUsed": "99304",
+        "submittedBy": "0x4a21aab64c045b9223a4a0688834dec293c13815",
+        "transfer": {
+          "from": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc",
+          "to": "0x67E2F98EaC710d893C3717C789e3d5765d8d07AA",
+          "value": "1000"
+        },
+        "matches": true
+      }
+    },
+    {
+      "path": "/api/pacific/gas",
+      "query": {},
+      "first": {
+        "status": 402,
+        "accepts": {
+          "scheme": "exact",
+          "network": "eip155:688689",
+          "amount": "2000",
+          "asset": "0xB691f00682fEef63bc73f41C380fF648d73c6A2c",
+          "payTo": "0x67E2F98EaC710d893C3717C789e3d5765d8d07AA",
+          "maxTimeoutSeconds": 120,
+          "extra": {
+            "name": "TEST USDC",
+            "assetTransferMethod": "permit2"
+          }
+        },
+        "paymentRequired": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cDovL2xvY2FsaG9zdDozMTgwL2FwaS9wYWNpZmljL2dhcyIsImRlc2NyaXB0aW9uIjoiUGhhcm9zIFBhY2lmaWMgTWFpbm5ldCdzIGZlZSBtYXJrZXQgb3ZlciB0aGUgbGFzdCA2NCBibG9ja3M6IGJhc2UgZmVlLCBhbmQgaG93IG1hbnkgc2VuZGVycyBwYWlkIGFib3ZlIGl0LiIsIm1pbWVUeXBlIjoiYXBwbGljYXRpb24vanNvbiIsInNlcnZpY2VOYW1lIjoiUGhhcm9zIHg0MDIgUGF5d2FsbCJ9LCJhY2NlcHRzIjpbeyJzY2hlbWUiOiJleGFjdCIsIm5ldHdvcmsiOiJlaXAxNTU6Njg4Njg5IiwiYW1vdW50IjoiMjAwMCIsImFzc2V0IjoiMHhCNjkxZjAwNjgyZkVlZjYzYmM3M2Y0MUMzODBmRjY0OGQ3M2M2QTJjIiwicGF5VG8iOiIweDY3RTJGOThFYUM3MTBkODkzQzM3MTdDNzg5ZTNkNTc2NWQ4ZDA3QUEiLCJtYXhUaW1lb3V0U2Vjb25kcyI6MTIwLCJleHRyYSI6eyJuYW1lIjoiVEVTVCBVU0RDIiwiYXNzZXRUcmFuc2Zlck1ldGhvZCI6InBlcm1pdDIifX1dfQ=="
+      },
+      "signed": {
+        "method": "permit2",
+        "from": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc",
+        "to": "0x67E2F98EaC710d893C3717C789e3d5765d8d07AA",
+        "value": "2000",
+        "token": "0xB691f00682fEef63bc73f41C380fF648d73c6A2c",
+        "spender": "0x402085c248EeA27D92E8b30b2C58ed07f9E20001",
+        "nonce": "53426389171340385611344034899396324797749339745713886851610937651781132944476",
+        "validBefore": "1794254684",
+        "signature": "0x08f09c34f9ffe247…"
+      },
+      "approval": null,
+      "second": {
+        "status": 200,
+        "body": {
+          "network": "Pharos Pacific Mainnet",
+          "blocks": {
+            "from": 22592272,
+            "to": 22592335
+          },
+          "baseFeeGwei": {
+            "now": 10,
+            "min": 10,
+            "max": 10
+          },
+          "transactions": 22,
+          "paidAboveBaseFee": 10,
+          "share": 0.45454545454545453,
+          "overpayGwei": {
+            "median": 92.80736789,
+            "max": 110.094407521
+          },
+          "advice": "Send with a tip of 0: 12 of 22 transactions in these blocks paid exactly the base fee and were included.",
+          "paid": {
+            "amount": "0.002 USDC",
+            "transaction": "0x6d04303b8f3219a6d60d5f9003f6423300c07714ebdfe274f3dd9f4f9a2b5ac9",
+            "payer": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc"
+          }
+        },
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "payment-response": "eyJzdWNjZXNzIjp0cnVlLCJwYXllciI6IjB4MWZlMjEyMDRERWM1OTM3NWI3ODVmM2YyRTNmNmVhMmFmNDgwNDhDYyIsInRyYW5zYWN0aW9uIjoiMHg2ZDA0MzAzYjhmMzIxOWE2ZDYwZDVmOTAwM2Y2NDIzMzAwYzA3NzE0ZWJkZmUyNzRmM2RkOWY0ZjlhMmI1YWM5IiwibmV0d29yayI6ImVpcDE1NTo2ODg2ODkifQ=="
+        }
+      },
+      "paymentResponse": {
+        "success": true,
+        "payer": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc",
+        "transaction": "0x6d04303b8f3219a6d60d5f9003f6423300c07714ebdfe274f3dd9f4f9a2b5ac9",
+        "network": "eip155:688689"
+      },
+      "onchain": {
+        "hash": "0x6d04303b8f3219a6d60d5f9003f6423300c07714ebdfe274f3dd9f4f9a2b5ac9",
+        "explorer": "https://atlantic.pharosscan.xyz/tx/0x6d04303b8f3219a6d60d5f9003f6423300c07714ebdfe274f3dd9f4f9a2b5ac9",
+        "block": 32537568,
+        "status": "success",
+        "gasUsed": "82204",
+        "submittedBy": "0x4a21aab64c045b9223a4a0688834dec293c13815",
+        "transfer": {
+          "from": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc",
+          "to": "0x67E2F98EaC710d893C3717C789e3d5765d8d07AA",
+          "value": "2000"
+        },
+        "matches": true
+      }
+    },
+    {
+      "path": "/api/pacific/wallet",
+      "query": {
+        "address": "0x08cd62babd8Dac7404504792Df30C12fC5384Df5"
+      },
+      "first": {
+        "status": 402,
+        "accepts": {
+          "scheme": "exact",
+          "network": "eip155:688689",
+          "amount": "5000",
+          "asset": "0xB691f00682fEef63bc73f41C380fF648d73c6A2c",
+          "payTo": "0x67E2F98EaC710d893C3717C789e3d5765d8d07AA",
+          "maxTimeoutSeconds": 120,
+          "extra": {
+            "name": "TEST USDC",
+            "assetTransferMethod": "permit2"
+          }
+        },
+        "paymentRequired": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cDovL2xvY2FsaG9zdDozMTgwL2FwaS9wYWNpZmljL3dhbGxldD9hZGRyZXNzPTB4MDhjZDYyYmFiZDhEYWM3NDA0NTA0NzkyRGYzMEMxMmZDNTM4NERmNSIsImRlc2NyaXB0aW9uIjoiQSBQYWNpZmljIE1haW5uZXQgd2FsbGV0OiBQUk9TLCBVU0RDIGFuZCBXUFJPUyBiYWxhbmNlcywgbm9uY2UsIGFjY291bnQgdHlwZSwgVVNEQyBibGFja2xpc3QuIiwibWltZVR5cGUiOiJhcHBsaWNhdGlvbi9qc29uIiwic2VydmljZU5hbWUiOiJQaGFyb3MgeDQwMiBQYXl3YWxsIn0sImFjY2VwdHMiOlt7InNjaGVtZSI6ImV4YWN0IiwibmV0d29yayI6ImVpcDE1NTo2ODg2ODkiLCJhbW91bnQiOiI1MDAwIiwiYXNzZXQiOiIweEI2OTFmMDA2ODJmRWVmNjNiYzczZjQxQzM4MGZGNjQ4ZDczYzZBMmMiLCJwYXlUbyI6IjB4NjdFMkY5OEVhQzcxMGQ4OTNDMzcxN0M3ODllM2Q1NzY1ZDhkMDdBQSIsIm1heFRpbWVvdXRTZWNvbmRzIjoxMjAsImV4dHJhIjp7Im5hbWUiOiJURVNUIFVTREMiLCJhc3NldFRyYW5zZmVyTWV0aG9kIjoicGVybWl0MiJ9fV19"
+      },
+      "signed": {
+        "method": "permit2",
+        "from": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc",
+        "to": "0x67E2F98EaC710d893C3717C789e3d5765d8d07AA",
+        "value": "5000",
+        "token": "0xB691f00682fEef63bc73f41C380fF648d73c6A2c",
+        "spender": "0x402085c248EeA27D92E8b30b2C58ed07f9E20001",
+        "nonce": "80105711076255914851187052305105881199737375066199621567186417202003522754661",
+        "validBefore": "1794254700",
+        "signature": "0xfcb420fa909aee40…"
+      },
+      "approval": null,
+      "second": {
+        "status": 200,
+        "body": {
+          "network": "Pharos Pacific Mainnet",
+          "address": "0x08cd62babd8Dac7404504792Df30C12fC5384Df5",
+          "kind": "wallet (EOA)",
+          "nonce": 6014,
+          "balances": {
+            "PROS": "25.641945616055583982",
+            "USDC": "2109.5571",
+            "WPROS": "944.861979102387152137"
+          },
+          "usdcBlacklisted": false,
+          "paid": {
+            "amount": "0.005 USDC",
+            "transaction": "0xae346bff59c6defcd4a07b69a9b724a36b14ac78f3a7ad587d826a2a2235cc64",
+            "payer": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc"
+          }
+        },
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "payment-response": "eyJzdWNjZXNzIjp0cnVlLCJwYXllciI6IjB4MWZlMjEyMDRERWM1OTM3NWI3ODVmM2YyRTNmNmVhMmFmNDgwNDhDYyIsInRyYW5zYWN0aW9uIjoiMHhhZTM0NmJmZjU5YzZkZWZjZDRhMDdiNjlhOWI3MjRhMzZiMTRhYzc4ZjNhN2FkNTg3ZDgyNmEyYTIyMzVjYzY0IiwibmV0d29yayI6ImVpcDE1NTo2ODg2ODkifQ=="
+        }
+      },
+      "paymentResponse": {
+        "success": true,
+        "payer": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc",
+        "transaction": "0xae346bff59c6defcd4a07b69a9b724a36b14ac78f3a7ad587d826a2a2235cc64",
+        "network": "eip155:688689"
+      },
+      "onchain": {
+        "hash": "0xae346bff59c6defcd4a07b69a9b724a36b14ac78f3a7ad587d826a2a2235cc64",
+        "explorer": "https://atlantic.pharosscan.xyz/tx/0xae346bff59c6defcd4a07b69a9b724a36b14ac78f3a7ad587d826a2a2235cc64",
+        "block": 32537577,
+        "status": "success",
+        "gasUsed": "82204",
+        "submittedBy": "0x4a21aab64c045b9223a4a0688834dec293c13815",
+        "transfer": {
+          "from": "0x1fe21204DEc59375b785f3f2E3f6ea2af48048Cc",
+          "to": "0x67E2F98EaC710d893C3717C789e3d5765d8d07AA",
+          "value": "5000"
+        },
+        "matches": true
+      }
+    }
+  ],
+  "rejected": [
+    {
+      "kind": "underpaid",
+      "label": "underpaid by 1 unit",
+      "status": 402,
+      "error": {
+        "error": "No matching payment requirements"
+      },
+      "paymentRequired": true
+    },
+    {
+      "kind": "wrong-payTo",
+      "label": "paid to the wrong address",
+      "status": 402,
+      "error": {
+        "error": "No matching payment requirements"
+      },
+      "paymentRequired": true
+    },
+    {
+      "kind": "forged",
+      "label": "a forged signature",
+      "status": 402,
+      "error": {
+        "error": "invalid_permit2_signature"
+      },
+      "paymentRequired": true
+    },
+    {
+      "kind": "replay",
+      "label": "the same payment sent again",
+      "status": 402,
+      "error": {
+        "error": "permit2_simulation_failed"
+      },
+      "of": "0xa83a6fb5fa6182a87feaaec58a84aa6a9c70320c0e27eac6b418da4a30743339"
+    }
+  ]
+}

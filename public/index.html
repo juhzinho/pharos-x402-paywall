@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>x402 Paywall · Pharos Atlantic</title>
+<meta name="description" content="A pay-per-request API on Pharos Atlantic Testnet: x402, test USDC, its own facilitator.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23171511'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='15' font-weight='700' text-anchor='middle' fill='%23f2c14e'%3E402%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4f1ea; --card: #fffdf8; --ink: #1d1b16; --muted: #6b665b; --rule: #ddd6c8;
+    --amber: #b7791f; --amber-bg: #fbf0d9; --green: #2f7d4f; --green-bg: #e3f1e7; --red: #b23a2e; --red-bg: #f8e3df;
+    --code: #f0ece2; --link: #1f5f8b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #151410; --card: #1d1b16; --ink: #ece7dc; --muted: #9c9686; --rule: #36322a;
+      --amber: #f2c14e; --amber-bg: #3a2f17; --green: #6fcf97; --green-bg: #18301f; --red: #f08a7e; --red-bg: #3a1c18;
+      --code: #26231d; --link: #8cc4ec;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.55 "IBM Plex Sans", system-ui, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+  a { color: var(--link); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; }
+  header { border-bottom: 1px solid var(--rule); padding: 28px 0 22px; }
+  .top { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+  h1 { font: 600 26px/1.2 "IBM Plex Mono", monospace; margin: 0 0 6px; letter-spacing: -0.5px; }
+  h1 span { color: var(--amber); }
+  .lead { color: var(--muted); margin: 0; max-width: 620px; }
+  .lang { display: flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+  .lang button { border: 0; background: transparent; color: var(--muted); padding: 5px 10px; font: 500 12px "IBM Plex Mono", monospace; cursor: pointer; }
+  .lang button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .status { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 16px; font-size: 13px; color: var(--muted); }
+  .status b { color: var(--ink); font-weight: 500; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-right: 6px; vertical-align: 1px; }
+  .dot.ok { background: var(--green); } .dot.bad { background: var(--red); }
+  section { padding: 30px 0 6px; }
+  h2 { font: 600 13px "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin: 0 0 4px; }
+  .sub { margin: 0 0 16px; color: var(--muted); font-size: 14px; max-width: 700px; }
+  .card { background: var(--card); border: 1px solid var(--rule); border-radius: 8px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font: 500 12px "IBM Plex Mono", monospace; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  .price { font: 600 14px "IBM Plex Mono", monospace; white-space: nowrap; }
+  .free { color: var(--green); }
+  .route { font: 500 13px "IBM Plex Mono", monospace; word-break: break-all; }
+  .desc { color: var(--muted); font-size: 13px; }
+  button.act { border: 1px solid var(--ink); background: transparent; color: var(--ink); border-radius: 5px; padding: 5px 10px; font: 500 12px "IBM Plex Mono", monospace; cursor: pointer; white-space: nowrap; }
+  button.act:hover { background: var(--ink); color: var(--paper); }
+  button.act:disabled { opacity: .5; cursor: wait; }
+  input.addr { width: 100%; margin-top: 6px; padding: 5px 8px; border: 1px solid var(--rule); border-radius: 5px; background: var(--paper); color: var(--ink); font: 12px "IBM Plex Mono", monospace; }
+  .out { margin-top: 14px; display: none; }
+  .out.show { display: block; }
+  .pill { display: inline-block; font: 600 12px "IBM Plex Mono", monospace; padding: 2px 8px; border-radius: 4px; }
+  .s402 { background: var(--amber-bg); color: var(--amber); } .s200 { background: var(--green-bg); color: var(--green); } .sx { background: var(--red-bg); color: var(--red); }
+  pre { margin: 0; background: var(--code); border-radius: 6px; padding: 12px 14px; overflow-x: auto; font: 12.5px/1.5 "IBM Plex Mono", monospace; white-space: pre; }
+  .kv { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 6px 14px; font-size: 13px; }
+  .kv dt { color: var(--muted); } .kv dd { margin: 0; font-family: "IBM Plex Mono", monospace; font-size: 12.5px; overflow-wrap: anywhere; }
+  .pad { padding: 16px; }
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--rule); overflow-x: auto; }
+  .tabs button { border: 0; background: none; padding: 11px 16px; color: var(--muted); font: 500 13px "IBM Plex Mono", monospace; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+  .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--amber); }
+  ol.steps { list-style: none; margin: 0; padding: 0; }
+  ol.steps > li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; padding: 14px 16px; border-bottom: 1px dashed var(--rule); }
+  ol.steps > li:last-child { border-bottom: 0; }
+  .n { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--rule); display: grid; place-items: center; font: 600 12px "IBM Plex Mono", monospace; color: var(--muted); }
+  .st { font-weight: 500; margin-bottom: 6px; }
+  .st small { color: var(--muted); font-weight: 400; }
+  details summary { cursor: pointer; color: var(--muted); font-size: 13px; margin-top: 8px; }
+  details pre { margin-top: 8px; }
+  .tx { font: 500 13px "IBM Plex Mono", monospace; overflow-wrap: anywhere; }
+  .check { color: var(--green); font-weight: 500; }
+  .warn { background: var(--amber-bg); color: var(--ink); border: 1px solid var(--amber); border-radius: 6px; padding: 10px 14px; font-size: 13px; margin-bottom: 14px; }
+  .rej td:nth-child(3) { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; overflow-wrap: anywhere; }
+  .sum { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+  .sum div { padding: 14px 16px; border-right: 1px solid var(--rule); }
+  .sum div:last-child { border-right: 0; }
+  .sum b { display: block; font: 600 17px "IBM Plex Mono", monospace; }
+  .sum span { color: var(--muted); font-size: 12px; }
+  footer { border-top: 1px solid var(--rule); margin-top: 36px; padding: 18px 0 40px; color: var(--muted); font-size: 13px; }
+  .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font: 500 12.5px "IBM Plex Mono", monospace; color: var(--muted); margin: 14px 0 0; }
+  .flow i { font-style: normal; color: var(--rule); }
+  @media (max-width: 680px) {
+    .kv { grid-template-columns: minmax(0, 1fr); gap: 0 0; } .kv dd { margin-bottom: 8px; }
+    .sum { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sum div:nth-child(2) { border-right: 0; } .sum div:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
+    .prices thead { display: none; } .prices tr { display: block; border-bottom: 1px solid var(--rule); padding: 8px 0; } .prices td { display: block; border: 0; padding: 4px 14px; }
+    .rej thead { display: none; } .rej tr { display: block; border-bottom: 1px solid var(--rule); padding: 8px 0; } .rej td { display: block; border: 0; padding: 3px 14px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>x402 <span>Paywall</span></h1>
+        <p class="lead" data-i="lead">A pay-per-request API on Pharos Atlantic Testnet. Ask without paying and you get a 402 with the price; sign a USDC authorization and you get the data, a 200 and the settlement's transaction hash.</p>
+      </div>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="pt" aria-pressed="false">PT</button>
+      </div>
+    </div>
+    <div class="status" id="status">
+      <span><span class="dot" id="hdot"></span><b id="hstate">…</b></span>
+      <span><span data-i="network">network</span> <b class="mono">eip155:688689</b></span>
+      <span><span data-i="token">token</span> <b class="mono"><a href="https://atlantic.pharosscan.xyz/token/0xB691f00682fEef63bc73f41C380fF648d73c6A2c" target="_blank" rel="noopener" style="color:inherit">TEST USDC 0xb691…6a2c</a></b></span>
+      <span><span data-i="facil">facilitator</span> <b class="mono" id="hsigner">…</b></span>
+      <span><span data-i="gas">gas</span> <b class="mono" id="hgas">…</b></span>
+    </div>
+    <div class="flow" aria-hidden="true">GET <i>→</i> 402 PAYMENT-REQUIRED <i>→</i> sign Permit2 transfer <i>→</i> GET + PAYMENT-SIGNATURE <i>→</i> /verify <i>→</i> /settle <i>→</i> 200 PAYMENT-RESPONSE</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <h2 data-i="h-prices">Price list</h2>
+    <p class="sub" data-i="s-prices">Live from this deployment. “Ask” sends the request with no payment, exactly as any client would, and decodes the PAYMENT-REQUIRED header that comes back.</p>
+    <div class="card">
+      <table class="prices">
+        <thead><tr><th data-i="t-route">Route</th><th data-i="t-price">Price</th><th data-i="t-what">What you get</th><th></th></tr></thead>
+        <tbody id="prices"><tr><td colspan="4" class="desc">…</td></tr></tbody>
+      </table>
+    </div>
+    <div class="out card pad" id="ask-out" aria-live="polite"></div>
+  </section>
+
+  <section>
+    <h2 data-i="h-run">A paid request, start to finish</h2>
+    <p class="sub" data-i="s-run">Recorded with <code>npm run client -- demo --record</code>. Every hash is the facilitator's settlement on Atlantic, through the official x402 Permit2 proxy; the client checked the USDC Transfer in each receipt against the price and payTo.</p>
+    <div id="run-warn"></div>
+    <div class="card">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <ol class="steps" id="steps"><li><span></span><span class="desc">…</span></li></ol>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-i="h-rej">Payments that must fail</h2>
+    <p class="sub" data-i="s-rej">Same client, same run. Each one was refused with another 402 before anything reached the chain.</p>
+    <div class="card">
+      <table class="rej">
+        <thead><tr><th data-i="t-attempt">Attempt</th><th data-i="t-status">Answer</th><th data-i="t-reason">Reason</th></tr></thead>
+        <tbody id="rej"></tbody>
+      </table>
+    </div>
+    <div class="card sum" id="sum" style="margin-top:14px"></div>
+  </section>
+
+  <section>
+    <h2 data-i="h-fac">The facilitator</h2>
+    <p class="sub" data-i="s-fac">This API settles through its own facilitator, served next to it: <code>GET /facilitator/supported</code>, <code>POST /facilitator/verify</code>, <code>POST /facilitator/settle</code>. Its key lives in an environment variable, never in the code. It settles through the official <a href="https://atlantic.pharosscan.xyz/address/0x402085c248EeA27D92E8b30b2C58ed07f9E20001" target="_blank" rel="noopener">x402ExactPermit2Proxy</a>, which was not on Atlantic: this project deployed it from the initcode and salt published by coinbase/x402, at the same address as on every other chain.</p>
+    <pre id="supported">…</pre>
+  </section>
+
+  <section>
+    <h2 data-i="h-cli">Pay from your terminal</h2>
+    <p class="sub" data-i="s-cli">The client keeps its key in <code>.env</code> or a <code>.private_key</code> file, accepts only Atlantic TEST USDC and refuses any price above 0.01.</p>
+<pre>git clone https://github.com/juhzinho/pharos-x402-paywall && cd pharos-x402-paywall && npm install
+node scripts/keys.js                       # writes .env with fresh test keys, prints only addresses
+npm run client -- pay /api/pacific/gas --base <span id="base">https://pharos-x402-paywall.vercel.app</span>
+npm run client -- reject --base …          # underpaid, wrong payTo, forged, replay → 402
+npm run fork                               # the whole flow on an Atlantic fork, no funds needed</pre>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span data-i="foot">Pharos Season of AI · x402 Paywalled API.</span>
+    <a href="https://github.com/juhzinho/pharos-x402-paywall">GitHub</a> ·
+    <a href="https://github.com/juhzinho/pharos-x402-paywall#readme">README</a> ·
+    <a href="/health">/health</a> · <a href="/catalog">/catalog</a>
+  </div>
+</footer>
+
+<script>
+const T = {
+  pt: {
+    lead: "Uma API paga por requisição na Pharos Atlantic Testnet. Peça sem pagar e você recebe um 402 com o preço; assine uma autorização de USDC e recebe os dados, um 200 e o hash da transação de liquidação.",
+    network: "rede", token: "token", facil: "facilitador", gas: "gás",
+    "h-prices": "Tabela de preços", "s-prices": "Ao vivo, desta implantação. “Perguntar” envia a requisição sem pagamento, como qualquer cliente faria, e decodifica o cabeçalho PAYMENT-REQUIRED que volta.",
+    "t-route": "Rota", "t-price": "Preço", "t-what": "O que você recebe",
+    "h-run": "Uma requisição paga, do início ao fim", "s-run": "Gravada com <code>npm run client -- demo --record</code>. Cada hash é a liquidação do facilitador na Atlantic, pelo proxy Permit2 oficial do x402; o cliente conferiu o Transfer de USDC em cada recibo contra o preço e o payTo.",
+    "h-rej": "Pagamentos que precisam falhar", "s-rej": "Mesmo cliente, mesma execução. Cada um foi recusado com outro 402 antes de qualquer coisa chegar à rede.",
+    "t-attempt": "Tentativa", "t-status": "Resposta", "t-reason": "Motivo",
+    "h-fac": "O facilitador", "s-fac": "Esta API liquida pelo próprio facilitador, servido ao lado dela: <code>GET /facilitator/supported</code>, <code>POST /facilitator/verify</code>, <code>POST /facilitator/settle</code>. A chave fica numa variável de ambiente, nunca no código. Ele liquida pelo <a href=\"https://atlantic.pharosscan.xyz/address/0x402085c248EeA27D92E8b30b2C58ed07f9E20001\" target=\"_blank\" rel=\"noopener\">x402ExactPermit2Proxy</a> oficial, que não existia na Atlantic: este projeto o implantou com o initcode e o salt publicados pela coinbase/x402, no mesmo endereço de todas as outras redes.",
+    "h-cli": "Pague pelo terminal", "s-cli": "O cliente guarda a chave no <code>.env</code> ou num arquivo <code>.private_key</code>, aceita só o TEST USDC da Atlantic e recusa qualquer preço acima de 0,01.",
+    foot: "Pharos Season of AI · API com paywall x402.",
+    ask: "Perguntar", free: "grátis", ready: "pronto para liquidar", nokey: "sem chave: só verifica", nogas: "sem gás para liquidar", down: "indisponível",
+    "d-health": "estado, facilitador, gás", "d-catalog": "rotas e preços",
+    "d-/api/atlantic/block": "O bloco mais recente da Pharos Atlantic: número, hora, transações, gás.",
+    "d-/api/pacific/gas": "O mercado de taxas da Pharos Pacific Mainnet nos últimos 64 blocos: taxa base e quantos remetentes pagaram acima dela.",
+    "d-/api/pacific/wallet": "Uma carteira da Pacific Mainnet: saldos de PROS, USDC e WPROS, nonce, tipo de conta, blacklist do USDC.",
+    "w-underpaid": "o valor assinado não bate com nenhum preço aceito", "w-wrong-payTo": "o destinatário assinado não é o payTo da API", "w-forged": "a assinatura não recupera o pagador", "w-replay": "o nonce assinado já foi gasto: a simulação da transferência falha",
+    s1: "GET sem pagamento", s2: "Transferência Permit2 assinada", s2e: "Autorização EIP-3009 assinada", approval: "aprovação única do Permit2", s3: "GET com PAYMENT-SIGNATURE", s4: "A transação na Atlantic",
+    s1d: "O servidor responde 402 e diz o preço no cabeçalho PAYMENT-REQUIRED.", s2d: "O cliente assina uma transferência exata (token, valor, destinatário, prazo); quem envia a transação e paga o gás é o facilitador. Antes do primeiro pagamento o cliente aprova o Permit2 uma única vez.", s2de: "O cliente assina; não gasta gás. Só o facilitador envia transação.",
+    s3d: "O facilitador verifica e liquida; o servidor devolve os dados e o PAYMENT-RESPONSE.", s4d: "Lida do recibo: o Transfer de USDC bate com o preço e o payTo.",
+    decoded: "decodificado", body: "corpo da resposta", matches: "bate com o preço e o payTo", nomatch: "NÃO bate",
+    underpaid: "1 unidade a menos que o preço", "wrong-payTo": "pago para outro endereço", forged: "assinatura adulterada", replay: "o mesmo pagamento reenviado",
+    start: "saldo inicial", end: "saldo final", spent: "gasto", inv: "recusas custaram", zero: "nada",
+    forkwarn: "Esta é uma execução num fork da Atlantic (contratos reais, saldos de teste no fork). Os hashes abaixo não existem no explorador público.",
+    norun: "Ainda não há execução gravada.", block: "bloco", explorer: "ver no explorador", needaddr: "informe um endereço 0x…",
+  },
+  en: {
+    ask: "Ask", free: "free", ready: "ready to settle", nokey: "no key: verify only", nogas: "no gas to settle", down: "unreachable",
+    "d-health": "status, facilitator, gas", "d-catalog": "routes and prices",
+    "w-underpaid": "the signed value matches no accepted price", "w-wrong-payTo": "the signed recipient is not this API's payTo", "w-forged": "the signature does not recover to the payer", "w-replay": "the signed nonce is already spent: the transfer simulation fails",
+    s1: "GET without payment", s2: "Signed Permit2 transfer", s2e: "Signed EIP-3009 authorization", approval: "one-time Permit2 approval", s3: "GET with PAYMENT-SIGNATURE", s4: "The transaction on Atlantic",
+    s1d: "The server answers 402 and states the price in the PAYMENT-REQUIRED header.", s2d: "The client signs one exact transfer (token, amount, recipient, deadline); the facilitator sends the transaction and pays its gas. Before its first payment the client approves Permit2 once.", s2de: "The client signs; it spends no gas. Only the facilitator sends a transaction.",
+    s3d: "The facilitator verifies and settles; the server returns the data and PAYMENT-RESPONSE.", s4d: "Read from the receipt: the USDC Transfer matches the price and payTo.",
+    decoded: "decoded", body: "response body", matches: "matches the price and payTo", nomatch: "DOES NOT match",
+    underpaid: "1 unit below the price", "wrong-payTo": "paid to another address", forged: "a tampered signature", replay: "the same payment sent again",
+    start: "balance before", end: "balance after", spent: "spent", inv: "rejections cost", zero: "nothing",
+    forkwarn: "This run is on a fork of Atlantic (real contracts, test balances on the fork). The hashes below are not on the public explorer.",
+    norun: "No recorded run yet.", block: "block", explorer: "view on the explorer", needaddr: "enter a 0x… address",
+  },
+};
+const EN = {};
+document.querySelectorAll("[data-i]").forEach((el) => (EN[el.dataset.i] = el.innerHTML));
+let lang = "en";
+try { lang = localStorage.getItem("lang") || ""; } catch {}
+if (lang !== "en" && lang !== "pt") lang = (navigator.language || "").toLowerCase().startsWith("pt") ? "pt" : "en";
+const t = (k) => T[lang][k] ?? T.en[k] ?? EN[k] ?? k;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const usdc = (a) => `${(Number(a) / 1e6).toLocaleString(lang === "pt" ? "pt-BR" : "en-US", { maximumFractionDigits: 6 })} USDC`;
+const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : "—");
+const b64json = (s) => { try { return JSON.parse(atob(s)); } catch { return null; } };
+const EXPLORER = "https://atlantic.pharosscan.xyz";
+
+let health = null, catalog = null, run = null, tab = 0;
+
+function applyLang() {
+  document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+  document.querySelectorAll("[data-i]").forEach((el) => (el.innerHTML = lang === "pt" ? T.pt[el.dataset.i] ?? EN[el.dataset.i] : EN[el.dataset.i]));
+  document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  renderHealth(); renderPrices(); renderRun();
+}
+document.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("click", () => { lang = b.dataset.lang; try { localStorage.setItem("lang", lang); } catch {} applyLang(); }));
+
+function renderHealth() {
+  const f = health?.facilitator;
+  const gasless = f?.canSettle && Number(f.gasBalancePHRS) === 0;
+  $("hdot").className = "dot " + (health ? (f?.canSettle && !gasless ? "ok" : "bad") : "");
+  $("hstate").textContent = !health ? "…" : health.error ? t("down") : !f?.canSettle ? t("nokey") : gasless ? t("nogas") : t("ready");
+  $("hsigner").textContent = f?.signer ? short(f.signer) : "—";
+  $("hgas").textContent = f?.gasBalancePHRS != null ? `${Number(f.gasBalancePHRS).toFixed(4)} PHRS` : "—";
+}
+
+function renderPrices() {
+  if (!catalog) return;
+  const rows = [
+    ...catalog.free.filter((r) => !r.includes("facilitator")).map((r) => `<tr><td class="route">${esc(r)}</td><td class="price free">${t("free")}</td><td class="desc">${t(r.includes("health") ? "d-health" : "d-catalog")}</td><td></td></tr>`),
+    ...catalog.paid.map((r, i) => `<tr><td class="route">GET ${esc(r.path)}${r.query ? `<input class="addr" id="addr" aria-label="address" placeholder="address=0x…" value="0x08cd62babd8Dac7404504792Df30C12fC5384Df5">` : ""}</td><td class="price">${esc(r.price)}</td><td class="desc">${esc(lang === "pt" ? T.pt["d-" + r.path] ?? r.description : r.description)}</td><td><button class="act" data-ask="${i}">${t("ask")}</button></td></tr>`),
+  ];
+  $("prices").innerHTML = rows.join("");
+  document.querySelectorAll("[data-ask]").forEach((b) => b.addEventListener("click", () => ask(catalog.paid[b.dataset.ask], b)));
+}
+
+async function ask(route, btn) {
+  const out = $("ask-out");
+  let path = route.path;
+  if (route.query) {
+    const a = $("addr").value.trim();
+    if (!/^0x[0-9a-fA-F]{40}$/.test(a)) { out.className = "out card pad show"; out.innerHTML = `<span class="pill sx">400</span> ${t("needaddr")}`; return; }
+    path += `?address=${a}`;
+  }
+  btn.disabled = true;
+  try {
+    const res = await fetch(path, { headers: { accept: "application/json" } });
+    const hdr = res.headers.get("payment-required");
+    const dec = hdr ? b64json(hdr) : null;
+    const a = dec?.accepts?.[0];
+    out.className = "out card pad show";
+    out.innerHTML = `<div style="margin-bottom:12px"><span class="pill ${res.status === 402 ? "s402" : "sx"}">${res.status}</span> <span class="mono">GET ${esc(path)}</span></div>` +
+      (a ? `<dl class="kv"><dt>scheme</dt><dd>${esc(a.scheme)}</dd><dt>network</dt><dd>${esc(a.network)}</dd><dt>amount</dt><dd>${esc(a.amount)} (${usdc(a.amount)})</dd><dt>asset</dt><dd><a href="${EXPLORER}/address/${esc(a.asset)}" target="_blank" rel="noopener">${esc(a.asset)}</a> · ${esc(a.extra?.name)} · ${esc(a.extra?.assetTransferMethod ?? "eip3009")}</dd><dt>payTo</dt><dd>${esc(a.payTo)}</dd><dt>maxTimeoutSeconds</dt><dd>${esc(a.maxTimeoutSeconds)}</dd><dt>resource</dt><dd>${esc(dec.resource?.url)}</dd></dl>
+        <details><summary>PAYMENT-REQUIRED (${t("decoded")})</summary><pre>${esc(JSON.stringify(dec, null, 2))}</pre></details>` : `<pre>${esc(await res.text())}</pre>`);
+  } catch (e) {
+    out.className = "out card pad show"; out.innerHTML = `<span class="pill sx">error</span> ${esc(e.message)}`;
+  } finally { btn.disabled = false; }
+}
+
+function renderRun() {
+  if (!run) { $("steps").innerHTML = `<li><span></span><span class="desc">${t("norun")}</span></li>`; return; }
+  $("run-warn").innerHTML = run.fork ? `<div class="warn">${t("forkwarn")}</div>` : "";
+  $("tabs").innerHTML = run.paid.map((p, i) => `<button role="tab" aria-selected="${i === tab}" data-tab="${i}">${esc(p.path.replace("/api/", ""))} · ${usdc(p.first.accepts.amount).replace(" USDC", "")}</button>`).join("");
+  document.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => { tab = Number(b.dataset.tab); renderRun(); }));
+  const p = run.paid[tab], a = p.first.accepts, oc = p.onchain, pr = p.paymentResponse;
+  const pm = p.signed?.method === "permit2", approval = run.paid.find((x) => x.approval)?.approval;
+  const reqDec = p.first.paymentRequired ? b64json(p.first.paymentRequired) : null;
+  const { paid, ...data } = p.second.body;
+  const txLink = run.fork ? `<span class="tx">${esc(oc.hash)}</span>` : `<a class="tx" href="${esc(oc.explorer)}" target="_blank" rel="noopener">${esc(oc.hash)}</a>`;
+  $("steps").innerHTML = `
+    <li><span class="n">1</span><div><div class="st">${t("s1")} <span class="pill s402">402</span></div><div class="desc">${t("s1d")}</div>
+      <dl class="kv" style="margin-top:10px"><dt>amount</dt><dd>${esc(a.amount)} (${usdc(a.amount)})</dd><dt>asset</dt><dd>${esc(a.asset)}</dd><dt>payTo</dt><dd>${esc(a.payTo)}</dd><dt>network</dt><dd>${esc(a.network)}</dd></dl>
+      ${reqDec ? `<details><summary>PAYMENT-REQUIRED (${t("decoded")})</summary><pre>${esc(JSON.stringify(reqDec, null, 2))}</pre></details>` : ""}</div></li>
+    <li><span class="n">2</span><div><div class="st">${t(pm ? "s2" : "s2e")}</div><div class="desc">${t(pm ? "s2d" : "s2de")}</div>
+      <dl class="kv" style="margin-top:10px">${approval ? `<dt>${t("approval")}</dt><dd>${run.fork ? esc(approval.hash) : `<a href="${esc(approval.explorer)}" target="_blank" rel="noopener">${esc(approval.hash)}</a>`}</dd>` : ""}<dt>from</dt><dd>${esc(p.signed.from)}</dd><dt>to</dt><dd>${esc(p.signed.to)}</dd>${pm ? `<dt>spender</dt><dd>${esc(p.signed.spender)} (x402ExactPermit2Proxy)</dd>` : ""}<dt>value</dt><dd>${esc(p.signed.value)}</dd><dt>${pm ? "deadline" : "validBefore"}</dt><dd>${esc(p.signed.validBefore)} (${new Date(Number(p.signed.validBefore) * 1000).toISOString().replace("T", " ").slice(0, 19)} UTC)</dd><dt>nonce</dt><dd>${esc(p.signed.nonce)}</dd><dt>signature</dt><dd>${esc(p.signed.signature)}</dd></dl></div></li>
+    <li><span class="n">3</span><div><div class="st">${t("s3")} <span class="pill s200">200</span></div><div class="desc">${t("s3d")}</div>
+      <dl class="kv" style="margin-top:10px"><dt>PAYMENT-RESPONSE</dt><dd>success ${esc(pr.success)} · ${esc(pr.network)}</dd><dt>transaction</dt><dd>${txLink}</dd><dt>payer</dt><dd>${esc(pr.payer)}</dd></dl>
+      <details><summary>${t("body")}</summary><pre>${esc(JSON.stringify(data, null, 2))}</pre></details></div></li>
+    <li><span class="n">4</span><div><div class="st">${t("s4")}</div><div class="desc">${t("s4d")}</div>
+      <dl class="kv" style="margin-top:10px"><dt>${t("block")}</dt><dd>${esc(oc.block)} · ${esc(oc.status)}</dd><dt>Transfer</dt><dd>${usdc(oc.transfer.value)} · ${esc(short(oc.transfer.from))} → ${esc(short(oc.transfer.to))}</dd><dt>submitted by</dt><dd>${esc(oc.submittedBy)} (facilitator)</dd><dt></dt><dd class="${oc.matches ? "check" : ""}">${oc.matches ? "✓ " + t("matches") : t("nomatch")}</dd></dl>
+      ${run.fork ? "" : `<p style="margin:10px 0 0"><a href="${esc(oc.explorer)}" target="_blank" rel="noopener">${t("explorer")} ↗</a></p>`}</div></li>`;
+  $("rej").innerHTML = run.rejected.map((r) => `<tr><td>${t(r.kind)}</td><td><span class="pill ${r.status === 402 ? "s402" : "sx"}">${esc(r.status)}</span></td><td>${esc(r.error?.error ?? JSON.stringify(r.error))}<div class="desc" style="font-family:inherit">${t("w-" + r.kind)}</div></td></tr>`).join("");
+  const b = run.balance;
+  $("sum").innerHTML = `<div><b>${usdc(b.start)}</b><span>${t("start")}</span></div><div><b>${usdc(b.end)}</b><span>${t("end")}</span></div><div><b>${usdc(b.spent)}</b><span>${t("spent")} (${run.paid.map((p) => usdc(p.first.accepts.amount).replace(" USDC", "")).join(" + ")})</span></div><div><b>${BigInt(b.spent) === run.paid.reduce((s, p) => s + BigInt(p.first.accepts.amount), 0n) ? t("zero") : "?"}</b><span>${t("inv")}</span></div>`;
+}
+
+const getJSON = (u) => fetch(u, { headers: { accept: "application/json" } }).then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status))));
+$("base").textContent = location.origin;
+applyLang();
+getJSON("/health").then((h) => (health = h)).catch(() => (health = { error: true })).finally(renderHealth);
+getJSON("/catalog").then((c) => { catalog = c; renderPrices(); }).catch(() => ($("prices").innerHTML = `<tr><td colspan="4" class="desc">${t("down")}</td></tr>`));
+getJSON("/facilitator/supported").then((s) => ($("supported").textContent = "GET /facilitator/supported\n\n" + JSON.stringify(s, null, 2))).catch(() => ($("supported").textContent = t("down")));
+getJSON("runs/demo.json").catch(() => getJSON("runs/fork.json")).then((r) => { run = r; renderRun(); }).catch(() => renderRun());
+</script>
+</body>
+</html>
