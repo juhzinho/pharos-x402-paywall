@@ -21,19 +21,19 @@ GET /api/pacific/gas + PAYMENT-SIGNATURE     → /facilitator/verify → /facili
 | 1 | Atlantic Testnet, priced in test USDC | `lib/config.js`: `eip155:688689`, TEST USDC `0xB691…6A2c` paid through Permit2 (USDC v2 `0xcfC8…Fc8B` via EIP-3009 with `ASSET=usdc-v2`) | `PAYMENT-REQUIRED` on any paid route; [references/atlantic.md](skill/pharos-x402-paywall/references/atlantic.md) |
 | 2 | ≥ 2 paid routes at different prices, 1 free route | `lib/paywall.js`: `/api/atlantic/block` 0.001, `/api/pacific/gas` 0.002, `/api/pacific/wallet` 0.005; free `/health`, `/catalog` | [/catalog](https://pharos-x402-paywall.vercel.app/catalog), [/health](https://pharos-x402-paywall.vercel.app/health) |
 | 3 | Its own facilitator: `/verify`, `/settle`, `/supported` | `lib/facilitator.js`, served at `/facilitator/*` next to the API; the paywall reaches it over HTTP like any facilitator | [/facilitator/supported](https://pharos-x402-paywall.vercel.app/facilitator/supported) |
-| 4 | Demo: 402 → signed payment → 200 + `PAYMENT-RESPONSE` with tx hash on the explorer | `scripts/client.js demo --record` → `public/runs/demo.json`, shown step by step on the site | [0.001](https://atlantic.pharosscan.xyz/tx/0xa83a6fb5fa6182a87feaaec58a84aa6a9c70320c0e27eac6b418da4a30743339) · [0.002](https://atlantic.pharosscan.xyz/tx/0x6d04303b8f3219a6d60d5f9003f6423300c07714ebdfe274f3dd9f4f9a2b5ac9) · [0.005](https://atlantic.pharosscan.xyz/tx/0xae346bff59c6defcd4a07b69a9b724a36b14ac78f3a7ad587d826a2a2235cc64) USDC settlements |
+| 4 | Demo: 402 → signed payment → 200 + `PAYMENT-RESPONSE` with tx hash on the explorer | `scripts/client.js demo --record` → `public/runs/demo.json`, shown step by step on the site | [0.001](https://atlantic.pharosscan.xyz/tx/0xa2ef338e9b84f025e7b3c63556db1e29ad3f6cfac739f858a25f0db522703d38) · [0.002](https://atlantic.pharosscan.xyz/tx/0x014ecd5aa6702632bce6841e71247c82e87105ef14b52ee6e5b796f905818de0) · [0.005](https://atlantic.pharosscan.xyz/tx/0x1b237958abb7f2ca4e825a5f0d3a048be13db174fdfbba64851739994b150af3) USDC settlements |
 | 5 | Bad or underpaid payment → another 402 | underpaid by 1 unit, wrong payTo, tampered signature, replay: all 402 (`No matching payment requirements` ×2, `invalid_permit2_signature`, `permit2_simulation_failed`); balance spent = exactly 0.008 | site section “Payments that must fail”; `npm test`; `npm run fork` |
 | 6 | Keys in env vars or a file, never in code or prompts | `.env` (git-ignored) or `.private_key`; on Vercel, project env vars; `scripts/keys.js` prints only addresses | `.gitignore`, `.env.example`, test “no private key is written in tracked files” |
 
-## Proof on Atlantic (recorded 2026-11-09)
+## Proof on Atlantic (recorded 2026-11-09 against the deployed API)
 
 | What | Transaction |
 |---|---|
 | official `x402ExactPermit2Proxy` deployed at `0x4020…0001` | [0x94dd57f1…](https://atlantic.pharosscan.xyz/tx/0x94dd57f19ef95d914a3707b88c320b8794f5b29d30c55cc0360ffa79c3665aa8) (block 32,537,534) |
 | client's one-time Permit2 approval | [0x2c338fe0…](https://atlantic.pharosscan.xyz/tx/0x2c338fe01e822a111aef441bcb9ea060c31f783e310034ab83317a084bc2eedc) |
-| `/api/atlantic/block` paid, 0.001 USDC | [0xa83a6fb5…](https://atlantic.pharosscan.xyz/tx/0xa83a6fb5fa6182a87feaaec58a84aa6a9c70320c0e27eac6b418da4a30743339) (block 32,537,556) |
-| `/api/pacific/gas` paid, 0.002 USDC | [0x6d04303b…](https://atlantic.pharosscan.xyz/tx/0x6d04303b8f3219a6d60d5f9003f6423300c07714ebdfe274f3dd9f4f9a2b5ac9) (block 32,537,568) |
-| `/api/pacific/wallet` paid, 0.005 USDC | [0xae346bff…](https://atlantic.pharosscan.xyz/tx/0xae346bff59c6defcd4a07b69a9b724a36b14ac78f3a7ad587d826a2a2235cc64) (block 32,537,577) |
+| `/api/atlantic/block` paid, 0.001 USDC | [0xa2ef338e…](https://atlantic.pharosscan.xyz/tx/0xa2ef338e9b84f025e7b3c63556db1e29ad3f6cfac739f858a25f0db522703d38) (block 32,544,778) |
+| `/api/pacific/gas` paid, 0.002 USDC | [0x014ecd5a…](https://atlantic.pharosscan.xyz/tx/0x014ecd5aa6702632bce6841e71247c82e87105ef14b52ee6e5b796f905818de0) (block 32,544,789) |
+| `/api/pacific/wallet` paid, 0.005 USDC | [0x1b237958…](https://atlantic.pharosscan.xyz/tx/0x1b237958abb7f2ca4e825a5f0d3a048be13db174fdfbba64851739994b150af3) (block 32,544,800) |
 
 Each settlement is sent by the facilitator (`0x4A21…3815`) to the proxy and moves TEST USDC from the client (`0x1fe2…48Cc`) to payTo (`0x67E2…07AA`); the client checked every `Transfer` against the price and payTo.
 
