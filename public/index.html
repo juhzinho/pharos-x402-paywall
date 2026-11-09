@@ -109,11 +109,11 @@
     <div class="status" id="status">
       <span><span class="dot" id="hdot"></span><b id="hstate">…</b></span>
       <span><span data-i="network">network</span> <b class="mono">eip155:688689</b></span>
-      <span><span data-i="token">token</span> <b class="mono"><a href="https://atlantic.pharosscan.xyz/token/0xB691f00682fEef63bc73f41C380fF648d73c6A2c" target="_blank" rel="noopener" style="color:inherit">TEST USDC 0xb691…6a2c</a></b></span>
+      <span><span data-i="token">accepts</span> <b class="mono" id="htokens">…</b></span>
       <span><span data-i="facil">facilitator</span> <b class="mono" id="hsigner">…</b></span>
       <span><span data-i="gas">gas</span> <b class="mono" id="hgas">…</b></span>
     </div>
-    <div class="flow" aria-hidden="true">GET <i>→</i> 402 PAYMENT-REQUIRED <i>→</i> sign Permit2 transfer <i>→</i> GET + PAYMENT-SIGNATURE <i>→</i> /verify <i>→</i> /settle <i>→</i> 200 PAYMENT-RESPONSE</div>
+    <div class="flow" aria-hidden="true">GET <i>→</i> 402 PAYMENT-REQUIRED <i>→</i> sign (EIP-3009 or Permit2) <i>→</i> GET + PAYMENT-SIGNATURE <i>→</i> /verify <i>→</i> /settle <i>→</i> 200 PAYMENT-RESPONSE</div>
   </div>
 </header>
 
@@ -132,7 +132,8 @@
 
   <section>
     <h2 data-i="h-run">A paid request, start to finish</h2>
-    <p class="sub" data-i="s-run">Recorded with <code>npm run client -- demo --record</code>. Every hash is the facilitator's settlement on Atlantic, through the official x402 Permit2 proxy; the client checked the USDC Transfer in each receipt against the price and payTo.</p>
+    <p class="sub" data-i="s-run">Recorded with <code>npm run client -- demo --record</code>. Two runs, one per token the API accepts. Every hash is the facilitator's settlement on Atlantic (transferWithAuthorization for Circle USDC; the official x402 Permit2 proxy for TEST USDC); the client checked the USDC Transfer in each receipt against the price and payTo.</p>
+    <div class="tabs" role="tablist" id="runsel" style="margin-bottom:14px"></div>
     <div id="run-warn"></div>
     <div class="card">
       <div class="tabs" role="tablist" id="tabs"></div>
@@ -160,7 +161,7 @@
 
   <section>
     <h2 data-i="h-cli">Pay from your terminal</h2>
-    <p class="sub" data-i="s-cli">The client keeps its key in <code>.env</code> or a <code>.private_key</code> file, accepts only Atlantic TEST USDC and refuses any price above 0.01.</p>
+    <p class="sub" data-i="s-cli">The client keeps its key in <code>.env</code> or a <code>.private_key</code> file, pays only the one token it is set to (Circle USDC by default, <code>ASSET=test-usdc</code> for TEST USDC) and refuses any price above 0.01.</p>
 <pre>git clone https://github.com/juhzinho/pharos-x402-paywall && cd pharos-x402-paywall && npm install
 node scripts/keys.js                       # writes .env with fresh test keys, prints only addresses
 npm run client -- pay /api/pacific/gas --base <span id="base">https://pharos-x402-paywall.vercel.app</span>
@@ -182,21 +183,21 @@ npm run fork                               # the whole flow on an Atlantic fork,
 const T = {
   pt: {
     lead: "Uma API paga por requisição na Pharos Atlantic Testnet. Peça sem pagar e você recebe um 402 com o preço; assine uma autorização de USDC e recebe os dados, um 200 e o hash da transação de liquidação.",
-    network: "rede", token: "token", facil: "facilitador", gas: "gás",
+    network: "rede", token: "aceita", facil: "facilitador", gas: "gás",
     "h-prices": "Tabela de preços", "s-prices": "Ao vivo, desta implantação. “Perguntar” envia a requisição sem pagamento, como qualquer cliente faria, e decodifica o cabeçalho PAYMENT-REQUIRED que volta.",
     "t-route": "Rota", "t-price": "Preço", "t-what": "O que você recebe",
-    "h-run": "Uma requisição paga, do início ao fim", "s-run": "Gravada com <code>npm run client -- demo --record</code>. Cada hash é a liquidação do facilitador na Atlantic, pelo proxy Permit2 oficial do x402; o cliente conferiu o Transfer de USDC em cada recibo contra o preço e o payTo.",
+    "h-run": "Uma requisição paga, do início ao fim", "s-run": "Gravada com <code>npm run client -- demo --record</code>. Duas execuções, uma por token que a API aceita. Cada hash é a liquidação do facilitador na Atlantic (transferWithAuthorization para o USDC da Circle; o proxy Permit2 oficial do x402 para o TEST USDC); o cliente conferiu o Transfer de USDC em cada recibo contra o preço e o payTo.",
     "h-rej": "Pagamentos que precisam falhar", "s-rej": "Mesmo cliente, mesma execução. Cada um foi recusado com outro 402 antes de qualquer coisa chegar à rede.",
     "t-attempt": "Tentativa", "t-status": "Resposta", "t-reason": "Motivo",
     "h-fac": "O facilitador", "s-fac": "Esta API liquida pelo próprio facilitador, servido ao lado dela: <code>GET /facilitator/supported</code>, <code>POST /facilitator/verify</code>, <code>POST /facilitator/settle</code>. A chave fica numa variável de ambiente, nunca no código. Ele liquida pelo <a href=\"https://atlantic.pharosscan.xyz/address/0x402085c248EeA27D92E8b30b2C58ed07f9E20001\" target=\"_blank\" rel=\"noopener\">x402ExactPermit2Proxy</a> oficial, que não existia na Atlantic: este projeto o implantou com o initcode e o salt publicados pela coinbase/x402, no mesmo endereço de todas as outras redes.",
-    "h-cli": "Pague pelo terminal", "s-cli": "O cliente guarda a chave no <code>.env</code> ou num arquivo <code>.private_key</code>, aceita só o TEST USDC da Atlantic e recusa qualquer preço acima de 0,01.",
+    "h-cli": "Pague pelo terminal", "s-cli": "O cliente guarda a chave no <code>.env</code> ou num arquivo <code>.private_key</code>, paga só com o token configurado (USDC da Circle por padrão, <code>ASSET=test-usdc</code> para o TEST USDC) e recusa qualquer preço acima de 0,01.",
     foot: "Pharos Season of AI · API com paywall x402.",
     ask: "Perguntar", free: "grátis", ready: "pronto para liquidar", nokey: "sem chave: só verifica", nogas: "sem gás para liquidar", down: "indisponível",
     "d-health": "estado, facilitador, gás", "d-catalog": "rotas e preços",
     "d-/api/atlantic/block": "O bloco mais recente da Pharos Atlantic: número, hora, transações, gás.",
     "d-/api/pacific/gas": "O mercado de taxas da Pharos Pacific Mainnet nos últimos 64 blocos: taxa base e quantos remetentes pagaram acima dela.",
     "d-/api/pacific/wallet": "Uma carteira da Pacific Mainnet: saldos de PROS, USDC e WPROS, nonce, tipo de conta, blacklist do USDC.",
-    "w-underpaid": "o valor assinado não bate com nenhum preço aceito", "w-wrong-payTo": "o destinatário assinado não é o payTo da API", "w-forged": "a assinatura não recupera o pagador", "w-replay": "o nonce assinado já foi gasto: a simulação da transferência falha",
+    "w-underpaid": "o valor assinado não bate com nenhum preço aceito", "w-wrong-payTo": "o destinatário assinado não é o payTo da API", "w-forged": "a assinatura não recupera o pagador", "w-replay": "o nonce assinado já foi gasto na rede", "r-usdc": "USDC da Circle · EIP-3009 · sem gás para quem paga", "r-test-usdc": "TEST USDC · Permit2", option: "opção",
     s1: "GET sem pagamento", s2: "Transferência Permit2 assinada", s2e: "Autorização EIP-3009 assinada", approval: "aprovação única do Permit2", s3: "GET com PAYMENT-SIGNATURE", s4: "A transação na Atlantic",
     s1d: "O servidor responde 402 e diz o preço no cabeçalho PAYMENT-REQUIRED.", s2d: "O cliente assina uma transferência exata (token, valor, destinatário, prazo); quem envia a transação e paga o gás é o facilitador. Antes do primeiro pagamento o cliente aprova o Permit2 uma única vez.", s2de: "O cliente assina; não gasta gás. Só o facilitador envia transação.",
     s3d: "O facilitador verifica e liquida; o servidor devolve os dados e o PAYMENT-RESPONSE.", s4d: "Lida do recibo: o Transfer de USDC bate com o preço e o payTo.",
@@ -209,7 +210,7 @@ const T = {
   en: {
     ask: "Ask", free: "free", ready: "ready to settle", nokey: "no key: verify only", nogas: "no gas to settle", down: "unreachable",
     "d-health": "status, facilitator, gas", "d-catalog": "routes and prices",
-    "w-underpaid": "the signed value matches no accepted price", "w-wrong-payTo": "the signed recipient is not this API's payTo", "w-forged": "the signature does not recover to the payer", "w-replay": "the signed nonce is already spent: the transfer simulation fails",
+    "w-underpaid": "the signed value matches no accepted price", "w-wrong-payTo": "the signed recipient is not this API's payTo", "w-forged": "the signature does not recover to the payer", "w-replay": "the signed nonce is already spent on-chain", "r-usdc": "Circle USDC · EIP-3009 · no gas for the payer", "r-test-usdc": "TEST USDC · Permit2", option: "option",
     s1: "GET without payment", s2: "Signed Permit2 transfer", s2e: "Signed EIP-3009 authorization", approval: "one-time Permit2 approval", s3: "GET with PAYMENT-SIGNATURE", s4: "The transaction on Atlantic",
     s1d: "The server answers 402 and states the price in the PAYMENT-REQUIRED header.", s2d: "The client signs one exact transfer (token, amount, recipient, deadline); the facilitator sends the transaction and pays its gas. Before its first payment the client approves Permit2 once.", s2de: "The client signs; it spends no gas. Only the facilitator sends a transaction.",
     s3d: "The facilitator verifies and settles; the server returns the data and PAYMENT-RESPONSE.", s4d: "Read from the receipt: the USDC Transfer matches the price and payTo.",
@@ -233,7 +234,7 @@ const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : "—");
 const b64json = (s) => { try { return JSON.parse(atob(s)); } catch { return null; } };
 const EXPLORER = "https://atlantic.pharosscan.xyz";
 
-let health = null, catalog = null, run = null, tab = 0;
+let health = null, catalog = null, run = null, tab = 0, runs = {}, runKey = null;
 
 function applyLang() {
   document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
@@ -250,6 +251,7 @@ function renderHealth() {
   $("hstate").textContent = !health ? "…" : health.error ? t("down") : !f?.canSettle ? t("nokey") : gasless ? t("nogas") : t("ready");
   $("hsigner").textContent = f?.signer ? short(f.signer) : "—";
   $("hgas").textContent = f?.gasBalancePHRS != null ? `${Number(f.gasBalancePHRS).toFixed(4)} PHRS` : "—";
+  $("htokens").innerHTML = health?.accepts ? health.accepts.map((a) => `<a href="${EXPLORER}/token/${esc(a.address)}" target="_blank" rel="noopener" style="color:inherit">${esc(a.label)}</a>`).join(" · ") : "—";
 }
 
 function renderPrices() {
@@ -275,10 +277,10 @@ async function ask(route, btn) {
     const res = await fetch(path, { headers: { accept: "application/json" } });
     const hdr = res.headers.get("payment-required");
     const dec = hdr ? b64json(hdr) : null;
-    const a = dec?.accepts?.[0];
+    const opts = dec?.accepts ?? [];
     out.className = "out card pad show";
     out.innerHTML = `<div style="margin-bottom:12px"><span class="pill ${res.status === 402 ? "s402" : "sx"}">${res.status}</span> <span class="mono">GET ${esc(path)}</span></div>` +
-      (a ? `<dl class="kv"><dt>scheme</dt><dd>${esc(a.scheme)}</dd><dt>network</dt><dd>${esc(a.network)}</dd><dt>amount</dt><dd>${esc(a.amount)} (${usdc(a.amount)})</dd><dt>asset</dt><dd><a href="${EXPLORER}/address/${esc(a.asset)}" target="_blank" rel="noopener">${esc(a.asset)}</a> · ${esc(a.extra?.name)} · ${esc(a.extra?.assetTransferMethod ?? "eip3009")}</dd><dt>payTo</dt><dd>${esc(a.payTo)}</dd><dt>maxTimeoutSeconds</dt><dd>${esc(a.maxTimeoutSeconds)}</dd><dt>resource</dt><dd>${esc(dec.resource?.url)}</dd></dl>
+      (opts.length ? opts.map((a, i) => `<div class="desc" style="margin:${i ? 14 : 0}px 0 6px">${t("option")} ${i + 1} · ${esc(a.extra?.name)} · ${esc(a.extra?.assetTransferMethod ?? "eip3009")}</div><dl class="kv"><dt>scheme</dt><dd>${esc(a.scheme)}</dd><dt>network</dt><dd>${esc(a.network)}</dd><dt>amount</dt><dd>${esc(a.amount)} (${usdc(a.amount)})</dd><dt>asset</dt><dd><a href="${EXPLORER}/address/${esc(a.asset)}" target="_blank" rel="noopener">${esc(a.asset)}</a> · ${esc(a.extra?.name)} · ${esc(a.extra?.assetTransferMethod ?? "eip3009")}</dd><dt>payTo</dt><dd>${esc(a.payTo)}</dd><dt>maxTimeoutSeconds</dt><dd>${esc(a.maxTimeoutSeconds)}</dd><dt>resource</dt><dd>${esc(dec.resource?.url)}</dd></dl>`).join("") + `
         <details><summary>PAYMENT-REQUIRED (${t("decoded")})</summary><pre>${esc(JSON.stringify(dec, null, 2))}</pre></details>` : `<pre>${esc(await res.text())}</pre>`);
   } catch (e) {
     out.className = "out card pad show"; out.innerHTML = `<span class="pill sx">error</span> ${esc(e.message)}`;
@@ -287,6 +289,8 @@ async function ask(route, btn) {
 
 function renderRun() {
   if (!run) { $("steps").innerHTML = `<li><span></span><span class="desc">${t("norun")}</span></li>`; return; }
+  $("runsel").innerHTML = Object.keys(runs).map((k) => `<button role="tab" aria-selected="${k === runKey}" data-run="${k}">${t("r-" + k)}</button>`).join("");
+  document.querySelectorAll("[data-run]").forEach((b) => b.addEventListener("click", () => { runKey = b.dataset.run; run = runs[runKey]; tab = 0; renderRun(); }));
   $("run-warn").innerHTML = run.fork ? `<div class="warn">${t("forkwarn")}</div>` : "";
   $("tabs").innerHTML = run.paid.map((p, i) => `<button role="tab" aria-selected="${i === tab}" data-tab="${i}">${esc(p.path.replace("/api/", ""))} · ${usdc(p.first.accepts.amount).replace(" USDC", "")}</button>`).join("");
   document.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => { tab = Number(b.dataset.tab); renderRun(); }));
@@ -318,7 +322,14 @@ applyLang();
 getJSON("/health").then((h) => (health = h)).catch(() => (health = { error: true })).finally(renderHealth);
 getJSON("/catalog").then((c) => { catalog = c; renderPrices(); }).catch(() => ($("prices").innerHTML = `<tr><td colspan="4" class="desc">${t("down")}</td></tr>`));
 getJSON("/facilitator/supported").then((s) => ($("supported").textContent = "GET /facilitator/supported\n\n" + JSON.stringify(s, null, 2))).catch(() => ($("supported").textContent = t("down")));
-getJSON("runs/demo.json").catch(() => getJSON("runs/fork.json")).then((r) => { run = r; renderRun(); }).catch(() => renderRun());
+Promise.all([["usdc", "runs/demo.json"], ["test-usdc", "runs/demo-test-usdc.json"]].map(([k, u]) => getJSON(u).then((r) => (runs[k] = r)).catch(() => null)))
+  .then(async () => {
+    if (!Object.keys(runs).length) await getJSON("runs/fork.json").then((r) => (runs[r.asset?.key ?? "usdc"] = r)).catch(() => null);
+    runs = Object.fromEntries(["usdc", "test-usdc"].filter((k) => runs[k]).map((k) => [k, runs[k]])); // a fixed order, whichever loaded first
+    runKey = Object.keys(runs)[0] ?? null;
+    run = runKey ? runs[runKey] : null;
+    renderRun();
+  });
 </script>
 </body>
 </html>

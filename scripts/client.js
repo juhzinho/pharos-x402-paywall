@@ -10,7 +10,7 @@ import { privateKeyToAccount } from "viem/accounts";
 
 if (existsSync(".env")) process.loadEnvFile(".env");
 const { makeClient, pay, ask, usdcBalance } = await import("../lib/client.js");
-const { EXPLORER } = await import("../lib/config.js");
+const { EXPLORER, USDC } = await import("../lib/config.js");
 
 const args = process.argv.slice(2);
 const cmd = args[0];
@@ -54,7 +54,7 @@ try {
     process.exit(0);
   }
   const start = await usdcBalance(client, client.account.address);
-  console.log(dim(`client ${client.account.address} · ${usd(start)} on Atlantic · server ${base}`));
+  console.log(dim(`client ${client.account.address} · pays with ${USDC.label} (${USDC.address}) · ${usd(start)} on Atlantic · server ${base}`));
   const paid = [];
   if (cmd === "pay" || cmd === "demo") {
     const jobs = cmd === "pay" ? [[args[1], args[1] === "/api/pacific/wallet" ? { address: flag("address", client.account.address) } : {}]] : [["/api/atlantic/block", {}], ["/api/pacific/gas", {}], ["/api/pacific/wallet", { address: "0x08cd62babd8Dac7404504792Df30C12fC5384Df5" }]];
@@ -85,8 +85,8 @@ try {
   console.log(`\n${bold("Balance")} ${usd(start)} → ${usd(end)} · spent ${usd(spent)} · paid routes ${usd(expected)} · ${spent === expected ? green("rejections cost nothing") : red("MISMATCH")}`);
   if (args.includes("--record")) {
     const fork = process.env.FORK_RUN === "1"; // an Anvil fork: real contracts, but these hashes are not on the public explorer
-    const out = { recordedAt: new Date().toISOString(), network: "Pharos Atlantic Testnet (eip155:688689)", fork, explorer: EXPLORER, server: base, client: client.account.address, balance: { start: start.toString(), end: end.toString(), spent: spent.toString() }, paid: paid.map(({ header, ...p }) => p), rejected };
-    const file = fork ? "fork.json" : "demo.json";
+    const out = { recordedAt: new Date().toISOString(), network: "Pharos Atlantic Testnet (eip155:688689)", fork, asset: { key: USDC.key, label: USDC.label, address: USDC.address, method: USDC.method }, explorer: EXPLORER, server: base, client: client.account.address, balance: { start: start.toString(), end: end.toString(), spent: spent.toString() }, paid: paid.map(({ header, ...p }) => p), rejected };
+    const file = fork ? "fork.json" : USDC.key === "usdc" ? "demo.json" : `demo-${USDC.key}.json`;
     writeFileSync(new URL(`../public/runs/${file}`, import.meta.url), JSON.stringify(out, (_, v) => (typeof v === "bigint" ? v.toString() : v), 2));
     console.log(dim(`wrote public/runs/${file}`));
   }

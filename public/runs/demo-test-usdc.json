@@ -286,5 +286,11 @@
       },
       "of": "0xa2ef338e9b84f025e7b3c63556db1e29ad3f6cfac739f858a25f0db522703d38"
     }
-  ]
+  ],
+  "asset": {
+    "key": "test-usdc",
+    "label": "TEST USDC",
+    "address": "0xB691f00682fEef63bc73f41C380fF648d73c6A2c",
+    "method": "permit2"
+  }
 }

@@ -8,6 +8,7 @@ import { readFileSync } from "node:fs";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
 delete process.env.FACILITATOR_PRIVATE_KEY;
+delete process.env.ASSET;
 process.env.ATLANTIC_RPC_URL = "http://127.0.0.1:9"; // nothing listens there: any chain call would fail loudly
 const PAY_TO = privateKeyToAccount(generatePrivateKey()).address;
 process.env.PAY_TO_ADDRESS = PAY_TO;
@@ -26,7 +27,7 @@ before(async () => {
 after(() => server.close());
 
 const decode = (h) => JSON.parse(Buffer.from(h, "base64").toString());
-const client = () => makeClient(privateKeyToAccount(generatePrivateKey()), { rpc: process.env.ATLANTIC_RPC_URL });
+const client = (asset) => makeClient(privateKeyToAccount(generatePrivateKey()), { rpc: process.env.ATLANTIC_RPC_URL, asset });
 
 test("the paywall never takes its facilitator from the Host header", async () => {
   const { trustedFacilitatorUrl } = await import("../lib/app.js");
@@ -64,20 +65,25 @@ test("the facilitator serves /supported, validates bodies and only settles for i
   assert.equal(verify.isValid, false);
 });
 
-test("each paid route answers 402 with its own price in test USDC", async () => {
+test("each paid route answers 402 with its own price, offering Circle USDC (EIP-3009) first and TEST USDC (Permit2) second", async () => {
   const prices = new Set();
   for (const r of ROUTES) {
     const res = await fetch(`${base}${r.path}${r.query ? "?address=0x08cd62babd8Dac7404504792Df30C12fC5384Df5" : ""}`, { headers: { accept: "application/json" } });
     assert.equal(res.status, 402, r.path);
     const req = decode(res.headers.get("payment-required"));
-    const a = req.accepts[0];
-    assert.equal(a.scheme, "exact");
-    assert.equal(a.network, "eip155:688689");
-    assert.equal(a.asset, USDC.address);
-    assert.equal(a.payTo, PAY_TO);
-    assert.equal(a.amount, String(Math.round(Number(r.price) * 1e6)));
-    assert.deepEqual(a.extra, { name: "TEST USDC", assetTransferMethod: "permit2" });
-    prices.add(a.amount);
+    assert.equal(req.accepts.length, 2);
+    const [circle, test] = req.accepts;
+    for (const a of req.accepts) {
+      assert.equal(a.scheme, "exact");
+      assert.equal(a.network, "eip155:688689");
+      assert.equal(a.payTo, PAY_TO);
+      assert.equal(a.amount, String(Math.round(Number(r.price) * 1e6)));
+    }
+    assert.equal(circle.asset, "0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B");
+    assert.deepEqual(circle.extra, { name: "USDC", version: "2" });
+    assert.equal(test.asset, "0xB691f00682fEef63bc73f41C380fF648d73c6A2c");
+    assert.deepEqual(test.extra, { name: "TEST USDC", assetTransferMethod: "permit2" });
+    prices.add(circle.amount);
   }
   assert.equal(prices.size, ROUTES.length, "the paid routes have different prices");
 });
@@ -95,11 +101,11 @@ test("a garbage PAYMENT-SIGNATURE gets another 402", async () => {
   assert.ok(res.headers.get("payment-required"));
 });
 
-for (const kind of ["underpaid", "wrong-payTo"]) {
-  test(`a signed payment that is ${kind} gets another 402, before the facilitator is asked`, async () => {
-    const c = client();
+for (const [kind, i] of [["underpaid", 0], ["wrong-payTo", 0], ["underpaid", 1], ["wrong-payTo", 1]]) {
+  test(`a signed payment that is ${kind} gets another 402, before the facilitator is asked (${i ? "TEST USDC, Permit2" : "Circle USDC, EIP-3009"})`, async () => {
+    const c = client(i ? "test-usdc" : "usdc");
     const first = await ask(c, `${base}/api/pacific/gas`);
-    const a = first.required.accepts[0];
+    const a = first.required.accepts[i];
     const accepts = [{ ...a, ...(kind === "underpaid" ? { amount: String(BigInt(a.amount) - 1n) } : { payTo: "0x000000000000000000000000000000000000dEaD" }) }];
     const payload = await c.http.createPaymentPayload({ ...first.required, accepts });
     const res = await fetch(`${base}/api/pacific/gas`, { headers: { accept: "application/json", ...c.http.encodePaymentSignatureHeader(payload) } });
@@ -108,11 +114,11 @@ for (const kind of ["underpaid", "wrong-payTo"]) {
   });
 }
 
-test("the default asset is TEST USDC, paid through Permit2; USDC v2 stays available via EIP-3009", () => {
-  assert.equal(USDC.address, "0xB691f00682fEef63bc73f41C380fF648d73c6A2c");
-  assert.equal(USDC.method, "permit2");
-  assert.equal(ASSETS["usdc-v2"].method, "eip3009");
-  assert.equal(ASSETS["usdc-v2"].version, "2");
+test("the client pays with Circle USDC (EIP-3009) by default; TEST USDC goes through Permit2", () => {
+  assert.equal(USDC.address, "0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B");
+  assert.equal(USDC.method, "eip3009");
+  assert.equal(ASSETS["test-usdc"].method, "permit2");
+  assert.equal(ASSETS.usdc.version, "2");
 });
 
 test("the vendored proxy initcode is the published one and deploys to the SDK's proxy address", () => {
